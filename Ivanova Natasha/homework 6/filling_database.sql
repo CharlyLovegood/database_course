@@ -16,10 +16,7 @@ CREATE PROCEDURE populate_clients(IN number_of_rows INT)
         COMMIT;
     END
 //
-DELIMITER ;
 
-
-DELIMITER //
 CREATE PROCEDURE populate_providers(IN number_of_rows INT)
     BEGIN
         DECLARE i INT;
@@ -35,34 +32,28 @@ CREATE PROCEDURE populate_providers(IN number_of_rows INT)
         COMMIT;
     END
 //
-DELIMITER ;
 
-
-
-DELIMITER //
-CREATE PROCEDURE populate_workers(IN number_of_rows INT,IN role_id INT)
+CREATE PROCEDURE populate_workers(IN number_of_rows INT, IN role_id INT)
     BEGIN
         DECLARE i INT;
         SET i = 1;
         START TRANSACTION;
         WHILE i <= number_of_rows DO
-            INSERT INTO workers(first_name, second_name, vk_id, first_day_dttm, role) 
+            INSERT INTO workers(first_name, second_name, vk_id, first_day_dttm, phone_number, role) 
             VALUES (CONCAT('first_name - ', i),
 	                CONCAT('second_name - ', i),
 	                CONCAT('vk_id - ', i),
 				    DATE(NOW() - INTERVAL FLOOR(RAND() * 10) HOUR - INTERVAL FLOOR(RAND() * 20) DAY - INTERVAL FLOOR(RAND() * 10) MONTH),
-				    role_id);
+				    CONCAT('phone_number - ', i),
+                    role_id);
             SET i = i + 1;
         END WHILE;
         COMMIT;
     END
 //
-DELIMITER ;
 
 
 
-
-DELIMITER //
 CREATE PROCEDURE populate_shifts(IN number_of_rows INT)
     BEGIN
         DECLARE i INT;
@@ -79,11 +70,7 @@ CREATE PROCEDURE populate_shifts(IN number_of_rows INT)
         COMMIT;
     END
 //
-DELIMITER ;
 
-
-
-DELIMITER //
 CREATE PROCEDURE populate_visits(IN number_of_rows INT, IN number_of_clients INT)
     BEGIN
         DECLARE i INT;
@@ -98,13 +85,7 @@ CREATE PROCEDURE populate_visits(IN number_of_rows INT, IN number_of_clients INT
         COMMIT;
     END
 //
-DELIMITER ;
 
-
-
-
-
-DELIMITER //
 CREATE PROCEDURE populate_ingredients(IN number_of_rows INT)
     BEGIN
         DECLARE i INT;
@@ -120,11 +101,7 @@ CREATE PROCEDURE populate_ingredients(IN number_of_rows INT)
         COMMIT;
     END
 //
-DELIMITER ;
 
-
-
-DELIMITER //
 CREATE PROCEDURE populate_items(IN number_of_rows INT)
     BEGIN
         DECLARE i INT;
@@ -139,32 +116,24 @@ CREATE PROCEDURE populate_items(IN number_of_rows INT)
         COMMIT;
     END
 //
-DELIMITER ;
 
-
-
-DELIMITER //
-CREATE PROCEDURE populate_orders(IN number_of_rows INT, IN number_of_clients INT)
+CREATE PROCEDURE populate_orders(IN number_of_rows INT, IN number_of_clients INT, IN number_of_workers INT)
     BEGIN
         DECLARE i INT;
         SET i = 1;
         START TRANSACTION;
         WHILE i <= number_of_rows DO
-            INSERT INTO orders(client, total_price, dttm) 
+            INSERT INTO orders(client, total_price, dttm, worker) 
             VALUES (CEIL(RAND() * number_of_clients),
             		CEIL(RAND() * 1000),
-            		DATE(NOW() - INTERVAL FLOOR(RAND() * 10) HOUR - INTERVAL FLOOR(RAND() * 20) DAY - INTERVAL FLOOR(RAND() * 10) MONTH));
+            		DATE(NOW() - INTERVAL FLOOR(RAND() * 10) HOUR - INTERVAL FLOOR(RAND() * 20) DAY - INTERVAL FLOOR(RAND() * 10) MONTH),
+                    CONCAT(CEIL(RAND() * number_of_workers)));
             SET i = i + 1;
         END WHILE;
         COMMIT;
     END
 //
-DELIMITER ;
 
-
-
-
-DELIMITER //
 CREATE PROCEDURE populate_order_item_link(IN number_of_rows INT, IN number_of_items INT, IN number_of_orders INT)
     BEGIN
         DECLARE i INT;
@@ -179,10 +148,7 @@ CREATE PROCEDURE populate_order_item_link(IN number_of_rows INT, IN number_of_it
         COMMIT;
     END
 //
-DELIMITER ;
 
-
-DELIMITER //
 CREATE PROCEDURE populate_ingredient_item_link(IN number_of_rows INT, IN number_of_items INT, IN number_of_ingredients INT)
     BEGIN
         DECLARE i INT;
@@ -198,11 +164,7 @@ CREATE PROCEDURE populate_ingredient_item_link(IN number_of_rows INT, IN number_
         COMMIT;
     END
 //
-DELIMITER ;
 
-
-
-DELIMITER //
 CREATE PROCEDURE populate_worker_shift_link(IN number_of_rows INT, IN number_of_workers INT, IN number_of_shifts INT)
     BEGIN
         DECLARE i INT;
@@ -258,11 +220,11 @@ CALL populate_workers(3, 4);
 CALL populate_workers(10, 5);
 CALL populate_workers(1, 3);
 
-CALL populate_shifts(1000);
-CALL populate_visits(6000, 800);
+CALL populate_shifts(2000);
+CALL populate_visits(16000, 800);
 CALL populate_ingredients(30);
 CALL populate_items(30);
-CALL populate_orders(5000, 800);
-CALL populate_order_item_link(8000, 30, 5000);
+CALL populate_orders(25000, 800, 19);
+CALL populate_order_item_link(70000, 30, 25000);
 CALL populate_ingredient_item_link(200, 30, 30);
-CALL populate_worker_shift_link(5000, 19, 1000);
+CALL populate_worker_shift_link(10000, 19, 2000);
